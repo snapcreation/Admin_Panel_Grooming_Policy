@@ -1,0 +1,2871 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EXECUTIVE AUDIT & COMPLIANCE MATRIX</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+:root {
+    --bg: #05080b;
+    --panel: #0b1117;
+    --panel2: #0f171e;
+    --border-dim: #1b2a35;
+    --text: #d9e4ea;
+    --text-muted: #71818c;
+
+    --neon-green: #00ff9d;
+    --neon-red: #ff3158;
+    --neon-amber: #ffc400;
+    --neon-blue: #00b7ff;
+    --neon-purple: #b86cff;
+
+    --shadow-green: 0 0 20px rgba(0,255,157,.12);
+    --shadow-red: 0 0 20px rgba(255,49,88,.12);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+}
+
+/* =========================================================
+   MAIN DASHBOARD
+   ========================================================= */
+
+#dashboard {
+    min-height: 100vh;
+    padding: 18px;
+}
+
+.dashboard-container {
+    max-width: 1600px;
+    margin: auto;
+}
+
+.top-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 17px;
+    background: var(--panel);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.brand-title {
+    color: var(--neon-green);
+    font-size: clamp(16px, 2vw, 24px);
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.brand-subtitle {
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--neon-green);
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--neon-green);
+    box-shadow: 0 0 8px var(--neon-green);
+    animation: pulseDot 1.2s infinite;
+}
+
+@keyframes pulseDot {
+    0%,100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .3;
+    }
+}
+
+/* =========================================================
+   CONTROLS
+   ========================================================= */
+
+.controls-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 12px;
+    background: var(--panel);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.filter-btn {
+    padding: 8px 11px;
+    border: 1px solid var(--border-dim);
+    border-radius: 4px;
+    background: #091016;
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.filter-btn.active {
+    color: var(--neon-green);
+    border-color: var(--neon-green);
+    background: rgba(0,255,157,.05);
+}
+
+.filter-select,
+.search-input {
+    padding: 8px 10px;
+    min-width: 150px;
+    background: #091016;
+    color: var(--text);
+    border: 1px solid var(--border-dim);
+    border-radius: 4px;
+    outline: none;
+    font-size: 10px;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 220px;
+}
+
+.filter-select:focus,
+.search-input:focus {
+    border-color: var(--neon-blue);
+}
+
+.btn {
+    border: 1px solid var(--border-dim);
+    background: #0c141b;
+    color: var(--text);
+    border-radius: 4px;
+    padding: 9px 13px;
+    transition: .2s;
+}
+
+.btn:hover {
+    border-color: var(--neon-blue);
+    color: white;
+}
+
+.btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.btn-green {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    background: rgba(0,255,157,.04);
+    box-shadow: 0 0 12px rgba(0,255,157,.06);
+}
+
+.btn-green:hover {
+    background: rgba(0,255,157,.1);
+}
+
+.btn-amber {
+    border-color: var(--neon-amber);
+    color: var(--neon-amber);
+}
+
+.btn-red {
+    border-color: var(--neon-red);
+    color: var(--neon-red);
+}
+
+/* =========================================================
+   KPI
+   ========================================================= */
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.kpi-card {
+    padding: 16px;
+    background: var(--panel);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    min-height: 105px;
+}
+
+.kpi-label {
+    color: var(--text-muted);
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.kpi-value {
+    margin-top: 10px;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.kpi-green {
+    color: var(--neon-green);
+}
+
+.kpi-red {
+    color: var(--neon-red);
+}
+
+.kpi-amber {
+    color: var(--neon-amber);
+}
+
+.kpi-blue {
+    color: var(--neon-blue);
+}
+
+/* =========================================================
+   CHARTS
+   ========================================================= */
+
+.chart-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.panel-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-dim);
+    color: var(--neon-blue);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    padding: 15px;
+}
+
+/* =========================================================
+   REPEAT MATRIX
+   ========================================================= */
+
+.repeat-table-wrapper {
+    overflow-x: auto;
+}
+
+.repeat-table,
+.audit-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+.repeat-table th,
+.repeat-table td,
+.audit-table th,
+.audit-table td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border-dim);
+    text-align: left;
+    font-size: 10px;
+}
+
+.repeat-table th,
+.audit-table th {
+    color: var(--text-muted);
+    background: #091016;
+    font-size: 9px;
+    letter-spacing: .7px;
+    white-space: nowrap;
+}
+
+.repeat-table td,
+.audit-table td {
+    color: var(--text);
+}
+
+.repeat-table tr:hover,
+.audit-table tr:hover {
+    background: rgba(0,183,255,.025);
+}
+
+/* =========================================================
+   AUDIT TABLE
+   ========================================================= */
+
+.audit-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-dim);
+}
+
+.audit-scroll {
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 7px;
+    border-radius: 3px;
+    border: 1px solid var(--border-dim);
+    font-size: 8px;
+    white-space: nowrap;
+}
+
+.badge-green {
+    color: var(--neon-green);
+    border-color: rgba(0,255,157,.4);
+}
+
+.badge-red {
+    color: var(--neon-red);
+    border-color: rgba(255,49,88,.4);
+}
+
+.badge-amber {
+    color: var(--neon-amber);
+    border-color: rgba(255,196,0,.4);
+}
+
+.view-btn {
+    padding: 5px 8px;
+    color: var(--neon-blue);
+    background: transparent;
+    border: 1px solid rgba(0,183,255,.4);
+    border-radius: 3px;
+    font-size: 8px;
+}
+
+.view-btn:hover {
+    background: rgba(0,183,255,.08);
+}
+
+.checkbox {
+    accent-color: var(--neon-green);
+}
+
+/* =========================================================
+   EVIDENCE MODAL
+   ========================================================= */
+
+.evidence-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 90000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,.88);
+    backdrop-filter: blur(7px);
+}
+
+.evidence-modal-content {
+    width: min(1000px, 96vw);
+    max-height: 92vh;
+    overflow: auto;
+    background: var(--panel);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    box-shadow: 0 0 50px rgba(0,0,0,.8);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-dim);
+}
+
+.modal-title {
+    color: var(--neon-green);
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.modal-close {
+    color: var(--neon-red);
+    background: transparent;
+    border: 0;
+    font-size: 20px;
+}
+
+.modal-body {
+    padding: 15px;
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    .kpi-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+
+    #dashboard {
+        padding: 8px;
+    }
+
+    .top-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .controls-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-select,
+    .search-input {
+        width: 100%;
+        min-width: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     MAIN DASHBOARD
+     LOGIN REMOVED
+     ========================================================= -->
+
+<div id="dashboard">
+
+    <div class="dashboard-container">
+
+        <div class="top-header">
+
+            <div>
+
+                <div class="brand-title">
+                    AUDIT REGISTER & TELEMETRY
+                </div>
+
+                <div class="brand-subtitle">
+                    EXECUTIVE AUDIT & COMPLIANCE MATRIX
+                </div>
+
+            </div>
+
+            <div class="header-status">
+
+                <span class="status-dot"></span>
+
+                DASHBOARD ACTIVE
+
+            </div>
+
+        </div>
+
+        <!-- =====================================================
+             FILTER CONTROLS
+             ===================================================== -->
+
+        <div class="controls-panel">
+
+            <button
+                class="filter-btn active"
+                id="spanAll"
+                onclick="setTimeSpan('all')">
+                ALL
+            </button>
+
+            <button
+                class="filter-btn"
+                id="spanYear"
+                onclick="setTimeSpan('year')">
+                YEAR
+            </button>
+
+            <button
+                class="filter-btn"
+                id="spanMonth"
+                onclick="setTimeSpan('month')">
+                MONTH
+            </button>
+
+            <button
+                class="filter-btn"
+                id="spanToday"
+                onclick="setTimeSpan('today')">
+                TODAY
+            </button>
+
+            <select
+                id="ccFilter"
+                class="filter-select"
+                onchange="applyFilters()">
+
+                <option value="all">
+                    ALL CC
+                </option>
+
+            </select>
+
+            <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="SEARCH EMPLOYEE / ID / VIOLATION / CC..."
+                oninput="applyFilters()"
+            >
+
+            <button
+                class="btn btn-green"
+                onclick="exportExcel()">
+
+                EXPORT EXCEL
+
+            </button>
+
+        </div>
+
+        <!-- =====================================================
+             KPI CARDS
+             ===================================================== -->
+
+        <div class="kpi-grid">
+
+            <div class="kpi-card">
+
+                <div class="kpi-label">
+                    TOTAL VIOLATIONS
+                </div>
+
+                <div
+                    id="kpiTotal"
+                    class="kpi-value kpi-green">
+                    0
+                </div>
+
+            </div>
+
+            <div class="kpi-card">
+
+                <div class="kpi-label">
+                    TOTAL PENALTY
+                </div>
+
+                <div
+                    id="kpiPenalty"
+                    class="kpi-value kpi-red">
+                    ₹0
+                </div>
+
+            </div>
+
+            <div class="kpi-card">
+
+                <div class="kpi-label">
+                    APPLICABLE COST
+                </div>
+
+                <div
+                    id="kpiCost"
+                    class="kpi-value kpi-amber">
+                    ₹0
+                </div>
+
+            </div>
+
+            <div class="kpi-card">
+
+                <div class="kpi-label">
+                    EMPLOYEE FUND
+                </div>
+
+                <div
+                    id="kpiFund"
+                    class="kpi-value kpi-blue">
+                    ₹0
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- =====================================================
+             CHARTS
+             ===================================================== -->
+
+        <div class="chart-grid">
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    CC INTENSITY
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="ccChart"></canvas>
+                </div>
+
+            </div>
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    POLICY DISTRIBUTION
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="policyChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- =====================================================
+             REPEAT INFRACTION MATRIX
+             ===================================================== -->
+
+        <div class="panel" style="margin-bottom:15px;">
+
+            <div class="panel-header">
+                REPEAT INFRACTION MATRIX
+            </div>
+
+            <div class="repeat-table-wrapper">
+
+                <table class="repeat-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>EMPLOYEE</th>
+                            <th>EMPLOYEE ID</th>
+                            <th>DESIGNATION</th>
+                            <th>VIOLATIONS</th>
+                            <th>TOTAL PENALTY</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="repeatBody"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- =====================================================
+             LIVE AUDIT LOG
+             ===================================================== -->
+
+        <div class="panel">
+
+            <div class="audit-toolbar">
+
+                <div
+                    class="panel-header"
+                    style="padding:0;border:0;">
+                    LIVE AUDIT LOG
+                </div>
+
+                <div style="
+                    display:flex;
+                    gap:7px;
+                    flex-wrap:wrap;
+                ">
+
+                    <button
+                        class="btn"
+                        onclick="selectAll()">
+                        SELECT ALL
+                    </button>
+
+                    <button
+                        class="btn"
+                        onclick="deselectAll()">
+                        DESELECT
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="audit-scroll">
+
+                <table class="audit-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>SELECT</th>
+                            <th>S.NO</th>
+                            <th>DATE</th>
+                            <th>TIME</th>
+                            <th>CC</th>
+                            <th>EMPLOYEE</th>
+                            <th>EMPLOYEE ID</th>
+                            <th>DESIGNATION</th>
+                            <th>VIOLATION</th>
+                            <th>PENALTY</th>
+                            <th>COST</th>
+                            <th>FUND</th>
+                            <th>EVIDENCE</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="auditBody"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     EVIDENCE MODAL
+     ========================================================= -->
+
+<div
+    id="evidenceModal"
+    class="evidence-modal">
+
+    <div class="evidence-modal-content">
+
+        <div class="modal-header">
+
+            <div
+                id="modalFileTitle"
+                class="modal-title">
+                INSPECTION
+            </div>
+
+            <button
+                class="modal-close"
+                onclick="closeModal()">
+                ×
+            </button>
+
+        </div>
+
+        <div
+            id="evidenceContainer"
+            class="modal-body">
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+   ========================================================= */
+
+const SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbyQ8i4MvS1NmYZ5Au4tV7N4tz6WKibn0Yu3cA15dGDwc78ip5lNwAsU5Vz7DxHNXYFp/exec";
+
+
+/* =========================================================
+   APPLICATION STATE
+   ========================================================= */
+
+let allRecords = [];
+
+let filteredRecords = [];
+
+let selectedRows = new Set();
+
+let currentTimespan = "all";
+
+let ccChartInst = null;
+
+let policyChartInst = null;
+
+
+/* =========================================================
+   GENERIC RESPONSE PARSER
+   ========================================================= */
+
+async function readServerResponse(response) {
+
+    const rawText =
+        await response.text();
+
+    let data = null;
+
+    try {
+
+        data =
+            JSON.parse(rawText);
+
+    } catch (error) {
+
+        console.error(
+            "Invalid JSON response:",
+            rawText
+        );
+
+        throw new Error(
+            "Backend returned an invalid response. HTTP " +
+            response.status
+        );
+
+    }
+
+    if (!response.ok) {
+
+        throw new Error(
+            data &&
+            data.message
+                ? data.message
+                : "Server returned HTTP " +
+                  response.status
+        );
+
+    }
+
+    return data;
+
+}
+
+
+/* =========================================================
+   RECORD FETCH
+   ========================================================= */
+
+async function fetchRecords() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${SCRIPT_URL}?action=records`,
+                {
+                    method: "GET",
+                    cache: "no-store"
+                }
+            );
+
+
+        const data =
+            await readServerResponse(
+                response
+            );
+
+
+        console.log(
+            "RECORDS RESPONSE:",
+            data
+        );
+
+
+        if (
+            data &&
+            data.success &&
+            Array.isArray(data.records)
+        ) {
+
+            allRecords =
+                data.records;
+
+            populateCCDropdown();
+
+            applyFilters();
+
+            return;
+
+        }
+
+
+        console.warn(
+            "Records response:",
+            data
+        );
+
+
+        if (
+            data &&
+            data.message
+        ) {
+
+            console.error(
+                data.message
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Fetch records error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CC DROPDOWN
+   ========================================================= */
+
+function populateCCDropdown() {
+
+    const select =
+        document.getElementById(
+            "ccFilter"
+        );
+
+    if (!select) {
+        return;
+    }
+
+    const current =
+        select.value;
+
+    const ccSet =
+        new Set();
+
+    allRecords.forEach(
+        function (record) {
+
+            if (record.cc) {
+
+                ccSet.add(
+                    String(record.cc).trim()
+                );
+
+            }
+
+        }
+    );
+
+    select.innerHTML =
+        '<option value="all">ALL CC</option>';
+
+    Array.from(ccSet)
+        .sort()
+        .forEach(
+            function (cc) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    cc;
+
+                option.textContent =
+                    cc;
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    if (
+        Array.from(
+            select.options
+        ).some(
+            option =>
+                option.value === current
+        )
+    ) {
+
+        select.value =
+            current;
+
+    }
+
+}
+
+
+/* =========================================================
+   TIME FILTER
+   ========================================================= */
+
+function setTimeSpan(span) {
+
+    currentTimespan =
+        span;
+
+    [
+        "spanAll",
+        "spanYear",
+        "spanMonth",
+        "spanToday"
+    ].forEach(
+        function (id) {
+
+            const button =
+                document.getElementById(
+                    id
+                );
+
+            if (button) {
+
+                button.classList.remove(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+    const map = {
+
+        all: "spanAll",
+
+        year: "spanYear",
+
+        month: "spanMonth",
+
+        today: "spanToday"
+
+    };
+
+    if (map[span]) {
+
+        document.getElementById(
+            map[span]
+        ).classList.add(
+            "active"
+        );
+
+    }
+
+    applyFilters();
+
+}
+
+
+/* =========================================================
+   DATE NORMALIZATION
+   ========================================================= */
+
+function normalizeDate(value) {
+
+    if (!value) {
+        return null;
+    }
+
+    const text =
+        String(value).trim();
+
+
+    /*
+     * DD/MM/YYYY
+     * DD-MM-YYYY
+     */
+
+    const match =
+        text.match(
+            /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/
+        );
+
+
+    if (match) {
+
+        let year =
+            Number(match[3]);
+
+        if (year < 100) {
+            year += 2000;
+        }
+
+        return new Date(
+            year,
+            Number(match[2]) - 1,
+            Number(match[1])
+        );
+
+    }
+
+
+    const date =
+        new Date(value);
+
+    if (!isNaN(date.getTime())) {
+
+        return date;
+
+    }
+
+    return null;
+
+}
+
+
+/* =========================================================
+   FILTER
+   ========================================================= */
+
+function applyFilters() {
+
+    const ccElement =
+        document.getElementById(
+            "ccFilter"
+        );
+
+    const searchElement =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    const cc =
+        ccElement
+            ? ccElement.value
+            : "all";
+
+
+    const search =
+        searchElement
+            ? searchElement.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+    const now =
+        new Date();
+
+
+    filteredRecords =
+        allRecords.filter(
+            function (record) {
+
+                if (
+                    cc !== "all" &&
+                    String(
+                        record.cc || ""
+                    ).trim() !== cc
+                ) {
+
+                    return false;
+
+                }
+
+
+                if (search) {
+
+                    const haystack =
+                        [
+                            record.empName,
+                            record.empId,
+                            record.empDesignation,
+                            record.violation,
+                            record.violationId,
+                            record.cc,
+                            record.remarks,
+                            record.policyRemarks
+                        ]
+                        .join(" ")
+                        .toLowerCase();
+
+
+                    if (
+                        !haystack.includes(
+                            search
+                        )
+                    ) {
+
+                        return false;
+
+                    }
+
+                }
+
+
+                if (
+                    currentTimespan === "all"
+                ) {
+
+                    return true;
+
+                }
+
+
+                const date =
+                    normalizeDate(
+                        record.incidentDate
+                    );
+
+
+                if (!date) {
+
+                    return true;
+
+                }
+
+
+                if (
+                    currentTimespan === "year"
+                ) {
+
+                    return (
+                        date.getFullYear() ===
+                        now.getFullYear()
+                    );
+
+                }
+
+
+                if (
+                    currentTimespan === "month"
+                ) {
+
+                    return (
+                        date.getFullYear() ===
+                            now.getFullYear() &&
+                        date.getMonth() ===
+                            now.getMonth()
+                    );
+
+                }
+
+
+                if (
+                    currentTimespan === "today"
+                ) {
+
+                    return (
+                        date.getFullYear() ===
+                            now.getFullYear() &&
+                        date.getMonth() ===
+                            now.getMonth() &&
+                        date.getDate() ===
+                            now.getDate()
+                    );
+
+                }
+
+
+                return true;
+
+            }
+        );
+
+
+    renderKPIs();
+
+    renderCharts();
+
+    renderRepeatOffenders();
+
+    renderAuditTable();
+
+}
+
+
+/* =========================================================
+   NUMBER
+   ========================================================= */
+
+function numberValue(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return 0;
+
+    }
+
+    const cleaned =
+        String(value)
+            .replace(/,/g, "")
+            .replace(/[₹$]/g, "")
+            .trim();
+
+
+    const number =
+        Number(cleaned);
+
+
+    return isNaN(number)
+        ? 0
+        : number;
+
+}
+
+
+/* =========================================================
+   KPI
+   ========================================================= */
+
+function renderKPIs() {
+
+    let penalty = 0;
+
+    let cost = 0;
+
+    let fund = 0;
+
+
+    filteredRecords.forEach(
+        function (record) {
+
+            penalty +=
+                numberValue(
+                    record.penalty
+                );
+
+            cost +=
+                numberValue(
+                    record.applicableCost
+                );
+
+            fund +=
+                numberValue(
+                    record.employeeFund
+                );
+
+        }
+    );
+
+
+    document.getElementById(
+        "kpiTotal"
+    ).innerText =
+        filteredRecords.length;
+
+
+    document.getElementById(
+        "kpiPenalty"
+    ).innerText =
+        formatCurrency(penalty);
+
+
+    document.getElementById(
+        "kpiCost"
+    ).innerText =
+        formatCurrency(cost);
+
+
+    document.getElementById(
+        "kpiFund"
+    ).innerText =
+        formatCurrency(fund);
+
+}
+
+
+/* =========================================================
+   CURRENCY
+   ========================================================= */
+
+function formatCurrency(value) {
+
+    return "₹" +
+        Number(value || 0)
+            .toLocaleString(
+                "en-IN",
+                {
+                    maximumFractionDigits: 2
+                }
+            );
+
+}
+
+
+/* =========================================================
+   CHARTS
+   ========================================================= */
+
+function renderCharts() {
+
+    const ccCounts = {};
+
+    const policyCounts = {};
+
+
+    filteredRecords.forEach(
+        function (record) {
+
+            const cc =
+                String(
+                    record.cc ||
+                    "UNKNOWN"
+                ).trim();
+
+
+            ccCounts[cc] =
+                (ccCounts[cc] || 0) + 1;
+
+
+            const policy =
+                String(
+                    record.violation ||
+                    record.violationId ||
+                    "UNKNOWN"
+                ).trim();
+
+
+            policyCounts[policy] =
+                (policyCounts[policy] || 0) + 1;
+
+        }
+    );
+
+
+    const ccCanvas =
+        document.getElementById(
+            "ccChart"
+        );
+
+
+    const policyCanvas =
+        document.getElementById(
+            "policyChart"
+        );
+
+
+    if (!ccCanvas || !policyCanvas) {
+        return;
+    }
+
+
+    if (ccChartInst) {
+
+        ccChartInst.destroy();
+
+        ccChartInst = null;
+
+    }
+
+
+    if (policyChartInst) {
+
+        policyChartInst.destroy();
+
+        policyChartInst = null;
+
+    }
+
+
+    ccChartInst =
+        new Chart(
+            ccCanvas,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels:
+                        Object.keys(
+                            ccCounts
+                        ),
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Violations",
+
+                            data:
+                                Object.values(
+                                    ccCounts
+                                )
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    },
+
+                    scales: {
+
+                        x: {
+
+                            ticks: {
+                                color:
+                                    "#71818c"
+                            },
+
+                            grid: {
+                                color:
+                                    "rgba(255,255,255,.04)"
+                            }
+
+                        },
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+                                color:
+                                    "#71818c"
+                            },
+
+                            grid: {
+                                color:
+                                    "rgba(255,255,255,.04)"
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+
+    policyChartInst =
+        new Chart(
+            policyCanvas,
+            {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels:
+                        Object.keys(
+                            policyCounts
+                        ),
+
+                    datasets: [
+
+                        {
+
+                            data:
+                                Object.values(
+                                    policyCounts
+                                )
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position:
+                                "bottom",
+
+                            labels: {
+
+                                color:
+                                    "#9aabb5",
+
+                                font: {
+                                    size: 9
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   REPEAT OFFENDERS
+   ========================================================= */
+
+function renderRepeatOffenders() {
+
+    const body =
+        document.getElementById(
+            "repeatBody"
+        );
+
+
+    if (!body) {
+        return;
+    }
+
+
+    body.innerHTML = "";
+
+
+    const map = {};
+
+
+    filteredRecords.forEach(
+        function (record) {
+
+            const id =
+                String(
+                    record.empId ||
+                    record.empName ||
+                    "UNKNOWN"
+                ).trim();
+
+
+            if (!map[id]) {
+
+                map[id] = {
+
+                    name:
+                        record.empName ||
+                        "UNKNOWN",
+
+                    id:
+                        record.empId ||
+                        "",
+
+                    designation:
+                        record.empDesignation ||
+                        "",
+
+                    count: 0,
+
+                    penalty: 0
+
+                };
+
+            }
+
+
+            map[id].count++;
+
+
+            map[id].penalty +=
+                numberValue(
+                    record.penalty
+                );
+
+        }
+    );
+
+
+    const rows =
+        Object.values(map)
+            .filter(
+                row =>
+                    row.count > 1
+            )
+            .sort(
+                (a, b) =>
+                    b.count - a.count
+            );
+
+
+    if (!rows.length) {
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    style="
+                        text-align:center;
+                        color:var(--text-muted);
+                    "
+                >
+
+                    NO REPEAT INFRACTIONS FOUND
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    rows.forEach(
+        function (row) {
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            tr.innerHTML = `
+
+                <td>
+                    ${escapeHtml(row.name)}
+                </td>
+
+                <td>
+                    ${escapeHtml(row.id)}
+                </td>
+
+                <td>
+                    ${escapeHtml(row.designation)}
+                </td>
+
+                <td>
+
+                    <span class="badge badge-red">
+                        ${row.count}
+                    </span>
+
+                </td>
+
+                <td>
+                    ${formatCurrency(
+                        row.penalty
+                    )}
+                </td>
+
+            `;
+
+
+            body.appendChild(tr);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHtml(value) {
+
+    return String(
+        value ?? ""
+    ).replace(
+        /[&<>"']/g,
+        function (char) {
+
+            const map = {
+
+                "&": "&amp;",
+
+                "<": "&lt;",
+
+                ">": "&gt;",
+
+                '"': "&quot;",
+
+                "'": "&#039;"
+
+            };
+
+
+            return map[char];
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   AUDIT TABLE
+   ========================================================= */
+
+function renderAuditTable() {
+
+    const body =
+        document.getElementById(
+            "auditBody"
+        );
+
+
+    if (!body) {
+        return;
+    }
+
+
+    body.innerHTML = "";
+
+
+    if (!filteredRecords.length) {
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="13"
+                    style="
+                        text-align:center;
+                        padding:30px;
+                        color:var(--text-muted);
+                    "
+                >
+
+                    NO AUDIT RECORDS FOUND
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    filteredRecords.forEach(
+        function (record, index) {
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            const evidence =
+                record.mediaUrl
+                    ? `
+
+                        <button
+                            class="view-btn"
+                            onclick="
+                                viewEvidenceModalByIndex(${index})
+                            "
+                        >
+                            VIEW
+                        </button>
+
+                    `
+                    : `
+
+                        <span
+                            style="
+                                color:var(--text-muted);
+                                font-size:8px;
+                            "
+                        >
+                            NO FILE
+                        </span>
+
+                    `;
+
+
+            tr.innerHTML = `
+
+                <td>
+
+                    <input
+                        type="checkbox"
+                        class="checkbox"
+                        ${
+                            selectedRows.has(index)
+                                ? "checked"
+                                : ""
+                        }
+                        onchange="
+                            toggleSelectRow(
+                                ${index},
+                                this.checked
+                            )
+                        "
+                    >
+
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        record.sNo
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        record.incidentDate
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        record.incidentTime
+                    )}
+                </td>
+
+
+                <td>
+
+                    <span class="badge badge-green">
+
+                        ${escapeHtml(
+                            record.cc
+                        )}
+
+                    </span>
+
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        record.empName
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        record.empId
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        record.empDesignation
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        record.violation
+                    )}
+                </td>
+
+
+                <td>
+                    ${formatCurrency(
+                        numberValue(
+                            record.penalty
+                        )
+                    )}
+                </td>
+
+
+                <td>
+                    ${formatCurrency(
+                        numberValue(
+                            record.applicableCost
+                        )
+                    )}
+                </td>
+
+
+                <td>
+                    ${formatCurrency(
+                        numberValue(
+                            record.employeeFund
+                        )
+                    )}
+                </td>
+
+
+                <td>
+                    ${evidence}
+                </td>
+
+            `;
+
+
+            body.appendChild(tr);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SELECT
+   ========================================================= */
+
+function toggleSelectRow(
+    index,
+    checked
+) {
+
+    if (checked) {
+
+        selectedRows.add(index);
+
+    } else {
+
+        selectedRows.delete(index);
+
+    }
+
+}
+
+
+function selectAll() {
+
+    selectedRows.clear();
+
+
+    filteredRecords.forEach(
+        function (_, index) {
+
+            selectedRows.add(index);
+
+        }
+    );
+
+
+    renderAuditTable();
+
+}
+
+
+function deselectAll() {
+
+    selectedRows.clear();
+
+    renderAuditTable();
+
+}
+
+
+/* =========================================================
+   DRIVE FILE ID
+   ========================================================= */
+
+function extractDriveFileId(url) {
+
+    if (!url) {
+        return "";
+    }
+
+
+    const text =
+        String(url);
+
+
+    const patterns = [
+
+        /[?&]id=([a-zA-Z0-9_-]+)/,
+
+        /\/d\/([a-zA-Z0-9_-]+)/,
+
+        /googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/
+
+    ];
+
+
+    for (
+        const pattern of patterns
+    ) {
+
+        const match =
+            text.match(pattern);
+
+
+        if (
+            match &&
+            match[1]
+        ) {
+
+            return match[1];
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =========================================================
+   VIDEO DETECTION
+   ========================================================= */
+
+function isVideoRecord(
+    record,
+    url
+) {
+
+    const type =
+        String(
+            record.mediaType ||
+            ""
+        ).toLowerCase();
+
+
+    const name =
+        String(
+            record.mediaFileName ||
+            record.mediaLabel ||
+            ""
+        ).toLowerCase();
+
+
+    const source =
+        String(
+            url ||
+            ""
+        ).toLowerCase();
+
+
+    return (
+
+        type.includes("video") ||
+
+        /\.(mp4|webm|mov|m4v|avi|3gp)(\?|$)/i
+            .test(name) ||
+
+        /\.(mp4|webm|mov|m4v|avi|3gp)(\?|$)/i
+            .test(source)
+
+    );
+
+}
+
+
+/* =========================================================
+   EVIDENCE MODAL
+   ========================================================= */
+
+function viewEvidenceModalByIndex(index) {
+
+    const record =
+        filteredRecords[index];
+
+
+    if (!record) {
+        return;
+    }
+
+
+    const modal =
+        document.getElementById(
+            "evidenceModal"
+        );
+
+
+    const container =
+        document.getElementById(
+            "evidenceContainer"
+        );
+
+
+    const title =
+        document.getElementById(
+            "modalFileTitle"
+        );
+
+
+    const fileName =
+        record.mediaFileName ||
+        record.mediaLabel ||
+        "EVIDENCE FILE";
+
+
+    const url =
+        record.mediaUrl ||
+        "";
+
+
+    title.innerText =
+        "INSPECTION // " +
+        fileName;
+
+
+    if (!url) {
+
+        container.innerHTML = `
+
+            <div style="
+                text-align:center;
+                color:var(--text-muted);
+            ">
+
+                EVIDENCE FILE NOT AVAILABLE
+
+            </div>
+
+        `;
+
+
+        modal.style.display =
+            "flex";
+
+
+        return;
+
+    }
+
+
+    const driveId =
+        extractDriveFileId(url);
+
+
+    if (driveId) {
+
+        const imageUrl =
+            "https://drive.google.com/uc?export=view&id=" +
+            driveId;
+
+
+        const mediaUrl =
+            "https://drive.google.com/uc?export=media&id=" +
+            driveId;
+
+
+        const previewUrl =
+            "https://drive.google.com/file/d/" +
+            driveId +
+            "/preview";
+
+
+        const downloadUrl =
+            "https://drive.google.com/uc?export=download&id=" +
+            driveId;
+
+
+        if (
+            isVideoRecord(
+                record,
+                url
+            )
+        ) {
+
+            container.innerHTML = `
+
+                <div style="
+                    width:100%;
+                    display:flex;
+                    flex-direction:column;
+                    align-items:center;
+                    gap:12px;
+                ">
+
+                    <video
+                        id="evidenceVideo"
+                        controls
+                        playsinline
+                        preload="metadata"
+                        style="
+                            width:100%;
+                            max-height:65vh;
+                            background:#000;
+                            border:1px solid var(--border-dim);
+                            border-radius:4px;
+                        "
+                    >
+
+                        <source
+                            src="${mediaUrl}"
+                        >
+
+                    </video>
+
+
+                    <div style="
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                        justify-content:center;
+                    ">
+
+                        <a
+                            href="${previewUrl}"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-green"
+                            style="text-decoration:none;"
+                        >
+                            OPEN IN DRIVE PREVIEW
+                        </a>
+
+
+                        <a
+                            href="${downloadUrl}"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-amber"
+                            style="text-decoration:none;"
+                        >
+                            OPEN / DOWNLOAD FILE
+                        </a>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            const video =
+                document.getElementById(
+                    "evidenceVideo"
+                );
+
+
+            video.onerror =
+                function () {
+
+                    showDrivePreview(
+                        container,
+                        previewUrl,
+                        downloadUrl
+                    );
+
+                };
+
+
+        } else {
+
+            container.innerHTML = `
+
+                <div style="
+                    width:100%;
+                    display:flex;
+                    flex-direction:column;
+                    align-items:center;
+                    gap:12px;
+                ">
+
+                    <img
+                        id="evidenceImage"
+                        src="${imageUrl}"
+                        alt=""
+                        style="
+                            max-width:100%;
+                            max-height:65vh;
+                            object-fit:contain;
+                            border:1px solid var(--border-dim);
+                            border-radius:4px;
+                            background:#000;
+                        "
+                    >
+
+
+                    <div style="
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                        justify-content:center;
+                    ">
+
+                        <a
+                            href="${previewUrl}"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-green"
+                            style="text-decoration:none;"
+                        >
+                            OPEN IN DRIVE PREVIEW
+                        </a>
+
+
+                        <a
+                            href="${downloadUrl}"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-amber"
+                            style="text-decoration:none;"
+                        >
+                            OPEN / DOWNLOAD FILE
+                        </a>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            const image =
+                document.getElementById(
+                    "evidenceImage"
+                );
+
+
+            image.onerror =
+                function () {
+
+                    showDrivePreview(
+                        container,
+                        previewUrl,
+                        downloadUrl
+                    );
+
+                };
+
+        }
+
+    } else {
+
+        container.innerHTML = `
+
+            <div style="
+                width:100%;
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+                gap:15px;
+            ">
+
+                <div style="
+                    color:var(--text-muted);
+                    text-align:center;
+                    font-size:11px;
+                ">
+
+                    SOURCE EVIDENCE URL
+
+                </div>
+
+
+                <a
+                    href="${escapeHtml(url)}"
+                    target="_blank"
+                    rel="noopener"
+                    class="btn btn-green"
+                    style="text-decoration:none;"
+                >
+                    OPEN EVIDENCE
+                </a>
+
+            </div>
+
+        `;
+
+    }
+
+
+    modal.style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   DRIVE PREVIEW FALLBACK
+   ========================================================= */
+
+function showDrivePreview(
+    container,
+    previewUrl,
+    downloadUrl
+) {
+
+    container.innerHTML = `
+
+        <div style="
+            width:100%;
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        ">
+
+            <iframe
+                src="${previewUrl}"
+                style="
+                    width:100%;
+                    height:65vh;
+                    border:1px solid var(--border-dim);
+                    border-radius:4px;
+                    background:#000;
+                "
+                allow="autoplay"
+            >
+            </iframe>
+
+
+            <div style="
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+                justify-content:center;
+            ">
+
+                <a
+                    href="${previewUrl}"
+                    target="_blank"
+                    rel="noopener"
+                    class="btn btn-green"
+                    style="text-decoration:none;"
+                >
+                    OPEN IN DRIVE
+                </a>
+
+
+                <a
+                    href="${downloadUrl}"
+                    target="_blank"
+                    rel="noopener"
+                    class="btn btn-amber"
+                    style="text-decoration:none;"
+                >
+                    OPEN / DOWNLOAD FILE
+                </a>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+   ========================================================= */
+
+function closeModal() {
+
+    const modal =
+        document.getElementById(
+            "evidenceModal"
+        );
+
+
+    const container =
+        document.getElementById(
+            "evidenceContainer"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "none";
+
+    }
+
+
+    if (container) {
+
+        container.innerHTML =
+            "";
+
+    }
+
+}
+
+
+/* =========================================================
+   EXCEL EXPORT
+   ========================================================= */
+
+function exportExcel() {
+
+    if (
+        !filteredRecords.length
+    ) {
+
+        alert(
+            "NO RECORDS AVAILABLE FOR EXPORT."
+        );
+
+        return;
+
+    }
+
+
+    const rows =
+        filteredRecords.map(
+            function (record) {
+
+                return {
+
+                    "S.NO":
+                        record.sNo || "",
+
+                    "CC":
+                        record.cc || "",
+
+                    "Violation ID":
+                        record.violationId || "",
+
+                    "Violation / Incident":
+                        record.violation || "",
+
+                    "Incident Date":
+                        record.incidentDate || "",
+
+                    "Incident Time":
+                        record.incidentTime || "",
+
+                    "Employee ID":
+                        record.empId || "",
+
+                    "Employee Name":
+                        record.empName || "",
+
+                    "Designation":
+                        record.empDesignation || "",
+
+                    "Evidence Type":
+                        record.mediaType || "",
+
+                    "Evidence File Name":
+                        record.mediaFileName || "",
+
+                    "Evidence Drive URL":
+                        record.mediaUrl || "",
+
+                    "Report Employee ID":
+                        record.reportEmployeeId || "",
+
+                    "Report Name":
+                        record.reportName || "",
+
+                    "Report Designation":
+                        record.reportDesignation || "",
+
+                    "Penalty":
+                        record.penalty || "",
+
+                    "Applicable Cost":
+                        record.applicableCost || "",
+
+                    "Employee Fund":
+                        record.employeeFund || "",
+
+                    "Policy Remarks":
+                        record.policyRemarks || "",
+
+                    "Remarks":
+                        record.remarks || "",
+
+                    "Created At":
+                        record.createdAt || "",
+
+                    "Saved At":
+                        record.savedAt || ""
+
+                };
+
+            }
+        );
+
+
+    const worksheet =
+        XLSX.utils.json_to_sheet(
+            rows
+        );
+
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Audit Report"
+    );
+
+
+    XLSX.writeFile(
+        workbook,
+        "Grooming_Audit_Report.xlsx"
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        /*
+         * Dashboard opens directly.
+         * No username.
+         * No password.
+         * No OTP.
+         * No camera.
+         * No authentication token.
+         */
+
+        fetchRecords();
+
+
+        /*
+         * Automatically refresh records
+         * every 30 seconds.
+         */
+
+        setInterval(
+            function () {
+
+                fetchRecords();
+
+            },
+            30000
+        );
+
+
+        /*
+         * Close evidence modal
+         * when clicking outside it.
+         */
+
+        const evidenceModal =
+            document.getElementById(
+                "evidenceModal"
+            );
+
+
+        if (evidenceModal) {
+
+            evidenceModal.addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target === this
+                    ) {
+
+                        closeModal();
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
+
